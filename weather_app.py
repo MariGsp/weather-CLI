@@ -3,8 +3,7 @@ from datetime import datetime
 
 api_key = xxxxx
 
-# city = input('Enter city name: ')
-city = "Oxford"
+city = input('Enter city name: ')
 
 loc_url = f'http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={api_key}'
 
