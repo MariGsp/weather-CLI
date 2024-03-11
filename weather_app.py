@@ -1,20 +1,26 @@
-import requests
+"""
+Command-line app to query the current weather
+and forecast for the next 24 hours at 3-hour intervals.
+"""
 from datetime import datetime
+import requests
 
-api_key = xxxxx
+API_KEY = ''
 
 city = input('Enter city name: ')
 
-loc_url = f'http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={api_key}'
+loc_url = f'http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=5&appid={API_KEY}'
 
-loc_response = requests.get(loc_url)
+loc_response = requests.get(loc_url, timeout=10)
 loc_data = loc_response.json()
 
 
-# convert temperature from kelvin to celsius
-def convertTemp(temp_kelvin):
-    temp_celsius = temp_kelvin - 273.15
-    return temp_celsius
+# convert temperature from Kelvin to Celsius
+def convert_temp(temp_k):
+    """"
+    Converts temperature from Kelvin to Celsius"""
+    temp_c = temp_k - 273.15
+    return temp_c
 
 
 if loc_response.status_code == 200:
@@ -24,15 +30,17 @@ if loc_response.status_code == 200:
     lon = loc_data[0]["lon"]
 
     # get URLs for the weather and the forecast
-    weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}'
-    forecast_url = f'https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}'
+    weather_url = (f'https://api.openweathermap.org/data/2.5/weather?'
+                   f'lat={lat}&lon={lon}&appid={API_KEY}')
+    forecast_url = (f'https://api.openweathermap.org/data/2.5/forecast?'
+                    f'lat={lat}&lon={lon}&appid={API_KEY}')
 
     # set weather response from URL to JSON
-    weather_response = requests.get(weather_url)
+    weather_response = requests.get(weather_url, timeout=10)
     weather_data = weather_response.json()
 
     # set forecast response from URL to JSON
-    forecast_response = requests.get(forecast_url)
+    forecast_response = requests.get(forecast_url, timeout=10)
     forecast_data = forecast_response.json()
 
     if weather_response.status_code == 200:
@@ -52,11 +60,11 @@ if loc_response.status_code == 200:
         sunset_ts = int(sunset)
         sunset_time = datetime.utcfromtimestamp(sunset_ts).strftime("%H:%M:%S")
 
-        # convert temperatures from Kelvin to Celsius      
-        temp_celsius = convertTemp(temp_kelvin)
-        feels_like_celsius = convertTemp(feels_like)
-        max_celsius = convertTemp(temp_max)
-        min_celsius = convertTemp(temp_min)
+        # convert temperatures from Kelvin to Celsius
+        temp_celsius = convert_temp(temp_kelvin)
+        feels_like_celsius = convert_temp(feels_like)
+        max_celsius = convert_temp(temp_max)
+        min_celsius = convert_temp(temp_min)
 
         # get current date and time
         current_datetime = datetime.now()
